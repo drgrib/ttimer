@@ -75,7 +75,7 @@ func parseClock(clock string) (int, int, error) {
 	return hour, 0, nil
 }
 
-func parseAsTime(t string, z string) (time.Duration, error) {
+func parseTime(t string, z string) (time.Duration, error) {
 	// parameterized location due to not all platforms supporting local detection
 	loc, err := time.LoadLocation(z)
 	zero := time.Duration(0)
@@ -109,6 +109,14 @@ func parseAsTime(t string, z string) (time.Duration, error) {
 	for endTime.Before(now) {
 		endTime = endTime.Add(12 * time.Hour)
 	}
+	// final increment if wrong period
+	if period == "a" && endTime.Hour() >= 12 {
+		endTime = endTime.Add(12 * time.Hour)
+	}
+	if period == "p" && endTime.Hour() < 12 {
+		endTime = endTime.Add(12 * time.Hour)
+	}
+	// calculate the duration
 	d := endTime.Sub(now)
 	return d, nil
 }
@@ -132,8 +140,7 @@ func parseArgs(t string, z string) (time.Duration, string) {
 			return d, title
 		}
 		// parse as time
-		// timeVal, err := parseAsTime(t, z)
-		d, err = parseAsTime(t, z)
+		d, err = parseTime(t, z)
 		if err == nil {
 			title := fmt.Sprintf("%v Timer", t)
 			return d, title
