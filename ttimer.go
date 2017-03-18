@@ -17,15 +17,15 @@ import (
 
 var args struct {
 	t string
-	z int
+	z string
 	N bool
 }
 
 func init() {
 	flag.StringVar(
 		&args.t, "t", "1", "time string")
-	flag.IntVar(
-		&args.z, "z", -8, "timezone offset from UTC")
+	flag.StringVar(
+		&args.z, "z", "America/Los_Angeles", "timezone")
 	flag.BoolVar(
 		&args.N, "N", false, "use notifications")
 	flag.Parse()
@@ -75,13 +75,18 @@ func parseClock(clock string) (int, int, error) {
 	return hour, 0, nil
 }
 
-func parseAsTime(t string, z int) (time.Time, error) {
+func parseAsTime(t string, z string) (time.Time, error) {
 	// default failures
 	failTime := time.Now()
 	failErr := errors.New(
 		fmt.Sprintf("Couldn't parse as time %#v", t))
 	// hard-coded location due to not all platforms supporting local
-
+	loc, err := time.LoadLocation(z)
+	if err != nil {
+		return failTime, err
+	}
+	now := time.Now().In(loc)
+	fmt.Println(now.Hour())
 	// track period
 	pattern := `(\d+)(a|p)?`
 	r := regexp.MustCompile(pattern)
@@ -104,7 +109,7 @@ func parseAsTime(t string, z int) (time.Time, error) {
 	return failTime, failErr
 }
 
-func parseArgs(t string, z int) (time.Duration, string) {
+func parseArgs(t string, z string) (time.Duration, string) {
 	switch {
 	case len(t) == 1:
 		// simple minute timer
