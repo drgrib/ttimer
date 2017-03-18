@@ -24,7 +24,7 @@ func init() {
 	flag.StringVar(
 		&args.z, "z", "-0800", "timezone string")
 	flag.BoolVar(
-		&args.N, "N", true, "use notifications")
+		&args.N, "N", false, "use notifications")
 	flag.Parse()
 }
 
