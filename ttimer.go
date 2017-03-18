@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	ui "github.com/gizak/termui"
@@ -44,6 +45,18 @@ func mustBeNil(err error) {
 /// parseArgs
 //////////////////////////////////////////////
 
+func parseAsTime(t, z string) (time.Time, error) {
+	pattern := `(\d+)(a|p)?`
+	r := regexp.MustCompile(pattern)
+	m := r.FindStringSubmatch(t)
+	period := m[2]
+	clock := m[1]
+	if period == "" {
+		fmt.Println("period ''", clock)
+	}
+	return time.Now(), errors.New(fmt.Sprintf("Couldn't parse as time %#v", t))
+}
+
 func parseArgs(t, z string) (time.Duration, string) {
 	switch {
 	case len(t) == 1:
@@ -63,13 +76,10 @@ func parseArgs(t, z string) (time.Duration, string) {
 			return d, title
 		}
 		// parse as time
-		pattern := `(\d+)(a|p)?`
-		r := regexp.MustCompile(pattern)
-		m := r.FindStringSubmatch(t)
-		period := m[2]
-		clock := m[1]
-		if period == "" {
-			fmt.Println("period ''", clock)
+		// timeVal, err := parseAsTime(t, z)
+		_, err = parseAsTime(t, z)
+		if err == nil {
+			return d, "Made It"
 		}
 		// if not time, parse as minute
 		minutes, err := strconv.Atoi(t)
