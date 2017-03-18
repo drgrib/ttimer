@@ -44,18 +44,23 @@ func mustBeNil(err error) {
 //////////////////////////////////////////////
 
 func parseArgs(t, z string) (time.Duration, string) {
-	if len(t) == 1 {
+	switch {
+	case len(t) == 1:
 		// simple minute timer
 		minutes, err := strconv.Atoi(t)
 		mustBeNil(err)
 		d := time.Duration(minutes) * time.Minute
 		title := fmt.Sprintf("%vm Timer", t)
 		return d, title
+	case len(t) >= 3:
+		d := time.Duration(6 * time.Second)
+		title := "Timer"
+		return d, title
+	default:
+		d := time.Duration(6 * time.Second)
+		title := "Timer"
+		return d, title
 	}
-	fmt.Println(len(z))
-	d := time.Duration(6 * time.Second)
-	title := "Timer"
-	return d, title
 }
 
 //////////////////////////////////////////////
