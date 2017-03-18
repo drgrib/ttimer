@@ -76,30 +76,28 @@ func parseClock(clock string) (int, int, error) {
 }
 
 func parseAsTime(t, z string) (time.Time, error) {
+	// default failures
 	failTime := time.Now()
-	failErr := errors.New(fmt.Sprintf("Couldn't parse as time %#v", t))
+	failErr := errors.New(
+		fmt.Sprintf("Couldn't parse as time %#v", t))
 	// track period
 	pattern := `(\d+)(a|p)?`
 	r := regexp.MustCompile(pattern)
 	m := r.FindStringSubmatch(t)
-	// handle clock
 	clock := m[1]
+	period := m[2]
+	// handle minute case
+	if period == "" && len(clock) <= 2 {
+		return failTime, errors.New(
+			fmt.Sprintf("No period, assuming minutes, not Time: %#v", clock))
+	}
+	// handle clock
 	hour, minute, err := parseClock(clock)
 	if err != nil {
 		return failTime, err
 	}
 	fmt.Println(hour, minute)
-	// handle period
-	period := m[2]
-	if period == "" {
-		// try no period string
-		if len(clock) <= 2 {
-			return failTime, errors.New(
-				fmt.Sprintf("No period, assuming minutes, not Time: %#v", clock))
-		}
-	} else {
-		// try period string
-	}
+
 	// fail whale
 	return failTime, failErr
 }
