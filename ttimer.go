@@ -5,6 +5,7 @@ import (
 	"fmt"
 	ui "github.com/gizak/termui"
 	"math"
+	"regexp"
 	"strconv"
 	"time"
 )
@@ -61,7 +62,16 @@ func parseArgs(t, z string) (time.Duration, string) {
 			title := fmt.Sprintf("%v Timer", t)
 			return d, title
 		}
-		// parse as minute
+		// parse as time
+		pattern := `(\d+)(a|p)?`
+		r := regexp.MustCompile(pattern)
+		m := r.FindStringSubmatch(t)
+		period := m[2]
+		clock := m[1]
+		if period == "" {
+			fmt.Println("period ''", clock)
+		}
+		// if not time, parse as minute
 		minutes, err := strconv.Atoi(t)
 		if err != nil {
 			break
@@ -163,9 +173,9 @@ func (t *Timer) countDown() {
 //////////////////////////////////////////////
 
 func main() {
-	// pars
+	// parse
 	d, title := parseArgs(args.t, args.z)
-
+	return
 	// start timer
 	timer := Timer{title: title}
 	timer.start(d)
