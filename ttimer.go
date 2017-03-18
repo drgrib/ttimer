@@ -46,15 +46,37 @@ func mustBeNil(err error) {
 //////////////////////////////////////////////
 
 func parseAsTime(t, z string) (time.Time, error) {
+	failTime := time.Now()
+	failErr := errors.New(fmt.Sprintf("Couldn't parse as time %#v", t))
+	// track period
 	pattern := `(\d+)(a|p)?`
 	r := regexp.MustCompile(pattern)
 	m := r.FindStringSubmatch(t)
 	period := m[2]
 	clock := m[1]
 	if period == "" {
-		fmt.Println("period ''", clock)
+		// try no period string
+		if len(clock) >= 3 {
+			// hour
+			hourStr := clock[:len(clock)-2]
+			hour, err := strconv.Atoi(hourStr)
+			if err != nil {
+				return failTime, failErr
+			}
+			fmt.Println("hour", hour)
+			// minute
+			minStr := clock[len(clock)-2:]
+			minute, err := strconv.Atoi(minStr)
+			if err != nil {
+				return failTime, failErr
+			}
+			fmt.Println("minute", minute)
+		}
+	} else {
+		// try no period string
 	}
-	return time.Now(), errors.New(fmt.Sprintf("Couldn't parse as time %#v", t))
+	// fail whale
+	return failTime, failErr
 }
 
 func parseArgs(t, z string) (time.Duration, string) {
