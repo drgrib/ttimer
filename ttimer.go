@@ -52,13 +52,18 @@ func parseArgs(t, z string) (time.Duration, string) {
 		d := time.Duration(minutes) * time.Minute
 		title := fmt.Sprintf("%vm Timer", t)
 		return d, title
-	case len(t) >= 3:
-		d := time.Duration(6 * time.Second)
-		title := "Timer"
-		return d, title
 	default:
-		d := time.Duration(6 * time.Second)
-		title := "Timer"
+		// parse as duration
+		d, err := time.ParseDuration(t)
+		if err == nil {
+			title := fmt.Sprintf("%v Timer", t)
+			return d, title
+		}
+		// else
+		fmt.Printf(
+			"%#v couldn't be parsed, starting 1m timer\n", t)
+		d = time.Duration(1 * time.Minute)
+		title := "1m Timer"
 		return d, title
 	}
 }
