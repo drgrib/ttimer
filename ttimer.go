@@ -45,6 +45,36 @@ func mustBeNil(err error) {
 /// parseArgs
 //////////////////////////////////////////////
 
+func parseClock(clock string) (int, int, error) {
+	if len(clock) >= 3 {
+		// hour
+		hourStr := clock[:len(clock)-2]
+		hour, err := strconv.Atoi(hourStr)
+		if err != nil {
+			return 0, 0, errors.New(
+				fmt.Sprintf(
+					"Couldn't parse hourStr %#v", hourStr))
+		}
+		// minute
+		minStr := clock[len(clock)-2:]
+		minute, err := strconv.Atoi(minStr)
+		if err != nil {
+			return 0, 0, errors.New(
+				fmt.Sprintf(
+					"Couldn't parse minStr %#v", minStr))
+
+		}
+		return hour, minute, nil
+	}
+	hour, err := strconv.Atoi(clock)
+	if err != nil {
+		return 0, 0, errors.New(
+			fmt.Sprintf(
+				"Couldn't parse as hour %#v", clock))
+	}
+	return hour, 0, nil
+}
+
 func parseAsTime(t, z string) (time.Time, error) {
 	failTime := time.Now()
 	failErr := errors.New(fmt.Sprintf("Couldn't parse as time %#v", t))
@@ -54,26 +84,15 @@ func parseAsTime(t, z string) (time.Time, error) {
 	m := r.FindStringSubmatch(t)
 	period := m[2]
 	clock := m[1]
+	hour, minute, err := parseClock(clock)
+	fmt.Println(hour, minute)
+	if err != nil {
+		return failTime, failErr
+	}
 	if period == "" {
 		// try no period string
-		if len(clock) >= 3 {
-			// hour
-			hourStr := clock[:len(clock)-2]
-			hour, err := strconv.Atoi(hourStr)
-			if err != nil {
-				return failTime, failErr
-			}
-			fmt.Println("hour", hour)
-			// minute
-			minStr := clock[len(clock)-2:]
-			minute, err := strconv.Atoi(minStr)
-			if err != nil {
-				return failTime, failErr
-			}
-			fmt.Println("minute", minute)
-		}
 	} else {
-		// try no period string
+		// try period string
 	}
 	// fail whale
 	return failTime, failErr
