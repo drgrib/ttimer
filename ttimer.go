@@ -55,16 +55,16 @@ func parseClock(clock string) (int, int, error) {
 				fmt.Sprintf(
 					"Couldn't parse hourStr %#v", hourStr))
 		}
-		// minute
+		// min
 		minStr := clock[len(clock)-2:]
-		minute, err := strconv.Atoi(minStr)
+		min, err := strconv.Atoi(minStr)
 		if err != nil {
 			return 0, 0, errors.New(
 				fmt.Sprintf(
 					"Couldn't parse minStr %#v", minStr))
 
 		}
-		return hour, minute, nil
+		return hour, min, nil
 	}
 	hour, err := strconv.Atoi(clock)
 	if err != nil {
@@ -75,18 +75,14 @@ func parseClock(clock string) (int, int, error) {
 	return hour, 0, nil
 }
 
-func parseAsTime(t string, z string) (time.Time, error) {
-	// default failures
-	failTime := time.Now()
-	failErr := errors.New(
-		fmt.Sprintf("Couldn't parse as time %#v", t))
-	// hard-coded location due to not all platforms supporting local
+func parseAsTime(t string, z string) (time.Duration, error) {
+	// parameterized location due to not all platforms supporting local detection
 	loc, err := time.LoadLocation(z)
+	zero := time.Duration(0)
 	if err != nil {
-		return failTime, err
+		return zero, err
 	}
 	now := time.Now().In(loc)
-	fmt.Println(now.Hour())
 	// track period
 	pattern := `(\d+)(a|p)?`
 	r := regexp.MustCompile(pattern)
@@ -95,18 +91,26 @@ func parseAsTime(t string, z string) (time.Time, error) {
 	period := m[2]
 	// handle minute case
 	if period == "" && len(clock) <= 2 {
-		return failTime, errors.New(
+		return zero, errors.New(
 			fmt.Sprintf("No period, assuming minutes, not Time: %#v", clock))
 	}
 	// handle clock
-	hour, minute, err := parseClock(clock)
+	hour, min, err := parseClock(clock)
 	if err != nil {
-		return failTime, err
+		return zero, err
 	}
-	fmt.Println(hour, minute)
-
-	// fail whale
-	return failTime, failErr
+	// estimate endTime
+	endTime := time.Date(
+		now.Year(), now.Month(), now.Day(),
+		hour, min,
+		0, 0,
+		loc)
+	// increment by 12 hours until after now
+	for endTime.Before(now) {
+		endTime = endTime.Add(12 * time.Hour)
+	}
+	d := endTime.Sub(now)
+	return d, nil
 }
 
 func parseArgs(t string, z string) (time.Duration, string) {
@@ -129,9 +133,10 @@ func parseArgs(t string, z string) (time.Duration, string) {
 		}
 		// parse as time
 		// timeVal, err := parseAsTime(t, z)
-		_, err = parseAsTime(t, z)
+		d, err = parseAsTime(t, z)
 		if err == nil {
-			return d, "Made It"
+			title := fmt.Sprintf("%v Timer", t)
+			return d, title
 		}
 		// if not time, parse as minute
 		minutes, err := strconv.Atoi(t)
@@ -237,7 +242,7 @@ func (t *Timer) countDown() {
 func main() {
 	// parse
 	d, title := parseArgs(args.t, args.z)
-	return
+
 	// start timer
 	timer := Timer{title: title}
 	timer.start(d)
