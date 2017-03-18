@@ -22,6 +22,7 @@ func panicErr(err error) {
 //////////////////////////////////////////////
 
 type Timer struct {
+	title    string
 	duration time.Duration
 	end      time.Time
 	status   string
@@ -43,12 +44,7 @@ func (t *Timer) update() {
 	}
 }
 
-//////////////////////////////////////////////
-/// main
-//////////////////////////////////////////////
-
-func main() {
-
+func (t *Timer) countDown() {
 	// init and close
 	err := ui.Init()
 	panicErr(err)
@@ -63,19 +59,14 @@ func main() {
 	cell.Width = 26
 	cell.Height = 2
 
-	// start timer
-	timer := Timer{}
-	d := time.Duration(6 * time.Second)
-	timer.start(d)
-
 	// draw
-	banner := "== Time =="
-	draw := func(t int) {
-		timer.update()
+	banner := fmt.Sprintf("== %s ==", t.title)
+	draw := func(tick int) {
+		t.update()
 		// render
 		cell.Text = fmt.Sprintf("%s\n%v",
 			banner,
-			timer.status)
+			t.status)
 		ui.Render(cell)
 	}
 
@@ -85,8 +76,8 @@ func main() {
 	ui.Merge("timer", ui.NewTimerCh(
 		time.Duration(ms)*time.Millisecond))
 	ui.Handle(timerPath, func(e ui.Event) {
-		t := e.Data.(ui.EvtTimer)
-		draw(int(t.Count))
+		tick := e.Data.(ui.EvtTimer)
+		draw(int(tick.Count))
 	})
 
 	// handle quit
@@ -96,4 +87,19 @@ func main() {
 
 	// start loop
 	ui.Loop()
+}
+
+//////////////////////////////////////////////
+/// main
+//////////////////////////////////////////////
+
+func main() {
+
+	// start timer
+	timer := Timer{title: "Timer"}
+	d := time.Duration(6 * time.Second)
+	timer.start(d)
+
+	// run UI
+	timer.countDown()
 }
