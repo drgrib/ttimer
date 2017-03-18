@@ -40,20 +40,22 @@ func mustBeNil(err error) {
 }
 
 //////////////////////////////////////////////
-/// argsToDuration
+/// parseArgs
 //////////////////////////////////////////////
 
-func argsToDuration(t, z string) time.Duration {
-	var d time.Duration
-	d = time.Duration(6 * time.Second)
+func parseArgs(t, z string) (time.Duration, string) {
 	if len(t) == 1 {
 		// simple minute timer
 		minutes, err := strconv.Atoi(t)
 		mustBeNil(err)
-		d = time.Duration(minutes) * time.Minute
+		d := time.Duration(minutes) * time.Minute
+		title := fmt.Sprintf("%vm Timer", t)
+		return d, title
 	}
 	fmt.Println(len(z))
-	return d
+	d := time.Duration(6 * time.Second)
+	title := "Timer"
+	return d, title
 }
 
 //////////////////////////////////////////////
@@ -141,10 +143,11 @@ func (t *Timer) countDown() {
 //////////////////////////////////////////////
 
 func main() {
-	d := argsToDuration(args.t, args.z)
+	// pars
+	d, title := parseArgs(args.t, args.z)
 
 	// start timer
-	timer := Timer{title: "Timer"}
+	timer := Timer{title: title}
 	timer.start(d)
 
 	// run UI
