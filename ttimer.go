@@ -5,6 +5,7 @@ import (
 	"fmt"
 	ui "github.com/gizak/termui"
 	"math"
+	"strconv"
 	"time"
 )
 
@@ -20,7 +21,7 @@ var args struct {
 
 func init() {
 	flag.StringVar(
-		&args.t, "t", "100", "time string")
+		&args.t, "t", "1", "time string")
 	flag.StringVar(
 		&args.z, "z", "-0800", "timezone string")
 	flag.BoolVar(
@@ -29,13 +30,30 @@ func init() {
 }
 
 //////////////////////////////////////////////
-/// functions
+/// util
 //////////////////////////////////////////////
 
-func panicErr(err error) {
+func mustBeNil(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+//////////////////////////////////////////////
+/// argsToDuration
+//////////////////////////////////////////////
+
+func argsToDuration(t, z string) time.Duration {
+	var d time.Duration
+	d = time.Duration(6 * time.Second)
+	if len(t) == 1 {
+		// simple minute timer
+		minutes, err := strconv.Atoi(t)
+		mustBeNil(err)
+		d = time.Duration(minutes) * time.Minute
+	}
+	fmt.Println(len(z))
+	return d
 }
 
 //////////////////////////////////////////////
@@ -68,7 +86,7 @@ func (t *Timer) update() {
 func (t *Timer) countDown() {
 	// init and close
 	err := ui.Init()
-	panicErr(err)
+	mustBeNil(err)
 	defer ui.Close()
 
 	// init cell
@@ -123,10 +141,10 @@ func (t *Timer) countDown() {
 //////////////////////////////////////////////
 
 func main() {
+	d := argsToDuration(args.t, args.z)
 
 	// start timer
 	timer := Timer{title: "Timer"}
-	d := time.Duration(6 * time.Second)
 	timer.start(d)
 
 	// run UI
