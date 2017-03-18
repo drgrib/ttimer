@@ -1,4 +1,4 @@
-package ttimer
+package main
 
 import (
 	"fmt"
@@ -7,12 +7,39 @@ import (
 	"time"
 )
 
+//////////////////////////////////////////////
+/// functions
+//////////////////////////////////////////////
+
+func panicErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+//////////////////////////////////////////////
+/// Timer
+//////////////////////////////////////////////
+
+type Timer struct {
+	duration time.Duration
+	end      time.Time
+}
+
+func (t *Timer) start(d time.Duration) {
+	t.duration = d
+	t.end = time.Now().Add(t.duration)
+}
+
+//////////////////////////////////////////////
+/// main
+//////////////////////////////////////////////
+
 func main() {
 
 	// init and close
-	if err := ui.Init(); err != nil {
-		panic(err)
-	}
+	err := ui.Init()
+	panicErr(err)
 	defer ui.Close()
 
 	// init cell
@@ -24,9 +51,10 @@ func main() {
 	cell.Width = 26
 	cell.Height = 2
 
-	// calculate duration
-	duration := time.Duration(6 * time.Second)
-	endTime := time.Now().Add(duration)
+	// start timer
+	timer := Timer{}
+	d := time.Duration(6 * time.Second)
+	timer.start(d)
 
 	// draw
 	banner := "== Time =="
@@ -34,8 +62,8 @@ func main() {
 		value := "[finished]"
 		// handle time subtraction
 		now := time.Now()
-		if !now.After(endTime) {
-			left := endTime.Sub(now)
+		if !now.After(timer.end) {
+			left := timer.end.Sub(now)
 			floorSeconds := math.Floor(left.Seconds())
 			rounded := time.Duration(floorSeconds) * time.Second
 			value = fmt.Sprintf("%v", rounded)
