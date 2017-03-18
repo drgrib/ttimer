@@ -12,17 +12,19 @@ import (
 /// flags
 //////////////////////////////////////////////
 
-var tFlag string
-var zFlag string
-var NFlag bool
+var args struct {
+	t string
+	z string
+	N bool
+}
 
 func init() {
 	flag.StringVar(
-		&tFlag, "t", "100", "time string")
+		&args.t, "t", "100", "time string")
 	flag.StringVar(
-		&zFlag, "z", "-0800", "timezone string")
+		&args.z, "z", "-0800", "timezone string")
 	flag.BoolVar(
-		&NFlag, "N", true, "use notifications")
+		&args.N, "N", true, "use notifications")
 	flag.Parse()
 }
 
