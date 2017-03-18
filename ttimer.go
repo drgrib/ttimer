@@ -56,8 +56,8 @@ func (t *Timer) countDown() {
 	cell.Border = false
 	cell.X = 2
 	cell.Y = 1
-	cell.Width = 26
-	cell.Height = 2
+	cell.Width = ui.TermWidth()
+	cell.Height = ui.TermHeight()
 
 	// draw
 	banner := fmt.Sprintf("== %s ==", t.title)
@@ -78,6 +78,14 @@ func (t *Timer) countDown() {
 	ui.Handle(timerPath, func(e ui.Event) {
 		tick := e.Data.(ui.EvtTimer)
 		draw(int(tick.Count))
+	})
+
+	// handle resize
+	ui.Handle("/sys/wnd/resize", func(e ui.Event) {
+		cell.Width = ui.TermWidth()
+		cell.Height = ui.TermHeight()
+		ui.Clear()
+		ui.Render(ui.Body)
 	})
 
 	// handle quit
