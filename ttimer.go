@@ -1,11 +1,30 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	ui "github.com/gizak/termui"
 	"math"
 	"time"
 )
+
+//////////////////////////////////////////////
+/// flags
+//////////////////////////////////////////////
+
+var tFlag string
+var zFlag string
+var NFlag bool
+
+func init() {
+	flag.StringVar(
+		&tFlag, "t", "100", "time string")
+	flag.StringVar(
+		&zFlag, "z", "-0800", "timezone string")
+	flag.BoolVar(
+		&NFlag, "N", true, "use notifications")
+	flag.Parse()
+}
 
 //////////////////////////////////////////////
 /// functions
