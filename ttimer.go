@@ -61,8 +61,14 @@ func parseArgs(t, z string) (time.Duration, string) {
 			title := fmt.Sprintf("%v Timer", t)
 			return d, title
 		}
-		// else
-
+		// parse as minute
+		minutes, err := strconv.Atoi(t)
+		if err != nil {
+			break
+		}
+		d = time.Duration(minutes) * time.Minute
+		title := fmt.Sprintf("%vm Timer", t)
+		return d, title
 	}
 	fmt.Printf(
 		"%#v couldn't be parsed, starting 1m timer\n", t)
