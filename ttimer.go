@@ -82,15 +82,21 @@ func parseAsTime(t, z string) (time.Time, error) {
 	pattern := `(\d+)(a|p)?`
 	r := regexp.MustCompile(pattern)
 	m := r.FindStringSubmatch(t)
-	period := m[2]
+	// handle clock
 	clock := m[1]
 	hour, minute, err := parseClock(clock)
-	fmt.Println(hour, minute)
 	if err != nil {
-		return failTime, failErr
+		return failTime, err
 	}
+	fmt.Println(hour, minute)
+	// handle period
+	period := m[2]
 	if period == "" {
 		// try no period string
+		if len(clock) <= 2 {
+			return failTime, errors.New(
+				fmt.Sprintf("No period, assuming minutes, not Time: %#v", clock))
+		}
 	} else {
 		// try period string
 	}
