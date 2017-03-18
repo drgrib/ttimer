@@ -24,11 +24,23 @@ func panicErr(err error) {
 type Timer struct {
 	duration time.Duration
 	end      time.Time
+	status   string
 }
 
 func (t *Timer) start(d time.Duration) {
 	t.duration = d
 	t.end = time.Now().Add(t.duration)
+}
+
+func (t *Timer) update() {
+	t.status = "[finished]"
+	now := time.Now()
+	if !now.After(t.end) {
+		left := t.end.Sub(now)
+		floorSeconds := math.Floor(left.Seconds())
+		rounded := time.Duration(floorSeconds) * time.Second
+		t.status = fmt.Sprintf("%v", rounded)
+	}
 }
 
 //////////////////////////////////////////////
@@ -59,19 +71,11 @@ func main() {
 	// draw
 	banner := "== Time =="
 	draw := func(t int) {
-		value := "[finished]"
-		// handle time subtraction
-		now := time.Now()
-		if !now.After(timer.end) {
-			left := timer.end.Sub(now)
-			floorSeconds := math.Floor(left.Seconds())
-			rounded := time.Duration(floorSeconds) * time.Second
-			value = fmt.Sprintf("%v", rounded)
-		}
+		timer.update()
 		// render
 		cell.Text = fmt.Sprintf("%s\n%v",
 			banner,
-			value)
+			timer.status)
 		ui.Render(cell)
 	}
 
