@@ -13,6 +13,7 @@ go get github.com/drgrib/ttimer
 To make it accessible on the commandline as `ttimer`, assuming you`ve added `$GOPATH/bin` to your `$PATH`, you can use
 
 ```
+cd $GOPATH/src/github.com/drgrib/ttimer
 go build
 go install
 ```
