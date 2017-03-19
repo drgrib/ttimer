@@ -2,6 +2,8 @@
 
 `ttimer` is a simple timer that counts down time left in a terminal window. If run on Mac, Windows, or desktop Linux, it will send silent system notifications at 90% and 100% completion.
 
+<img src="./example.gif" alt="demo" width="80%">
+
 ## Installing
 
 To install to your system you can use 
@@ -53,7 +55,7 @@ Let's say you need to leave for the bus by *8:12 am*, which is coming up in the 
 ttimer -t 812
 ```
 
-and `ttimer` will automatically infer the next occurence of `8:12`, which is `am`. E.g.
+and `ttimer` will automatically infer the next occurence of `8:12`, which is `am`
 
 ```
 == 812a Timer ==
