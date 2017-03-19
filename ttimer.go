@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/0xAX/notificator"
 	ui "github.com/gizak/termui"
 	"math"
 	"regexp"
@@ -18,7 +19,6 @@ import (
 var args struct {
 	t string
 	z string
-	N bool
 }
 
 func init() {
@@ -26,8 +26,6 @@ func init() {
 		&args.t, "t", "1", "time string")
 	flag.StringVar(
 		&args.z, "z", "America/Los_Angeles", "timezone")
-	flag.BoolVar(
-		&args.N, "N", false, "use notifications")
 	flag.Parse()
 }
 
@@ -179,6 +177,7 @@ type Timer struct {
 	title    string
 	duration time.Duration
 	end      time.Time
+	left     time.Duration
 	status   string
 }
 
@@ -191,10 +190,10 @@ func (t *Timer) update() {
 	t.status = "[finished]"
 	now := time.Now()
 	if !now.After(t.end) {
-		left := t.end.Sub(now)
-		floorSeconds := math.Floor(left.Seconds())
-		rounded := time.Duration(floorSeconds) * time.Second
-		t.status = fmt.Sprintf("%v", rounded)
+		exactLeft := t.end.Sub(now)
+		floorSeconds := math.Floor(exactLeft.Seconds())
+		t.left = time.Duration(floorSeconds) * time.Second
+		t.status = fmt.Sprintf("%v", t.left)
 	}
 }
 
@@ -203,6 +202,30 @@ func (t *Timer) countDown() {
 	err := ui.Init()
 	mustBeNil(err)
 	defer ui.Close()
+
+	// init notificator
+	notify := notificator.New(notificator.Options{
+		AppName: t.title,
+	})
+
+	// set and execute pre-notify
+	seconds := t.duration.Seconds()
+	if seconds > 10 {
+		go func() {
+			almostSec := math.Floor(seconds * .9)
+			almostDur := time.Duration(almostSec) * time.Second
+			<-time.After(almostDur)
+			message := fmt.Sprintf("%v left", t.left)
+			notify.Push(
+				"", message, "", notificator.UR_CRITICAL)
+		}()
+	}
+	// set and execute notify
+	go func() {
+		<-time.After(t.duration)
+		notify.Push(
+			"", "finished", "", notificator.UR_CRITICAL)
+	}()
 
 	// init cell
 	cell := ui.NewPar("")
