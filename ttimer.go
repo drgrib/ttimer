@@ -29,11 +29,6 @@ func mustBeNil(err error) {
 /// config
 //////////////////////////////////////////////
 
-var args struct {
-	t string
-	z string
-}
-
 var tildaConfig string = "~/.ttimer/conf"
 
 func saveConfigZone(timezone string) {
@@ -61,6 +56,15 @@ func loadConfigZone() string {
 	}
 	s := string(b)
 	return s
+}
+
+//////////////////////////////////////////////
+/// flags
+//////////////////////////////////////////////
+
+var args struct {
+	t string
+	z string
 }
 
 func init() {
