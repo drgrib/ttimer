@@ -39,7 +39,7 @@ Or if you want a very specific duration, you can specify it using
 ttimer -t 3h2m5s
 ```
 
-Or a very short time
+Or if you want a very short time
 
 ```
 ttimer -t 30s
