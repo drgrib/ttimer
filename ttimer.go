@@ -224,7 +224,7 @@ func (t *Timer) countDown() {
 	go func() {
 		<-time.After(t.duration)
 		notify.Push(
-			"", "finished", "", notificator.UR_CRITICAL)
+			"", "Finished", "", notificator.UR_CRITICAL)
 	}()
 
 	// init cell
