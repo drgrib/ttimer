@@ -71,7 +71,7 @@ func init() {
 	if configZone == "" {
 		configZone = "America/Los_Angeles"
 	}
-	// get user arg, using config if none
+	// get user arg, using configZone if none
 	flag.StringVar(
 		&args.z, "z", configZone, "timezone")
 	flag.Parse()
