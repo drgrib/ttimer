@@ -75,12 +75,12 @@ func parseClock(clock string) (int, int, error) {
 	return hour, 0, nil
 }
 
-func parseTime(t string, z string) (time.Duration, error) {
+func parseTime(t string, z string) (time.Duration, string, error) {
 	// parameterized location due to not all platforms supporting local detection
 	loc, err := time.LoadLocation(z)
 	zero := time.Duration(0)
 	if err != nil {
-		return zero, err
+		return zero, "", err
 	}
 	now := time.Now().In(loc)
 	// track period
@@ -91,13 +91,13 @@ func parseTime(t string, z string) (time.Duration, error) {
 	period := m[2]
 	// handle minute case
 	if period == "" && len(clock) <= 2 {
-		return zero, errors.New(
+		return zero, "", errors.New(
 			fmt.Sprintf("No period, assuming minutes, not Time: %#v", clock))
 	}
 	// handle clock
 	hour, min, err := parseClock(clock)
 	if err != nil {
-		return zero, err
+		return zero, "", err
 	}
 	// estimate endTime
 	endTime := time.Date(
@@ -118,7 +118,17 @@ func parseTime(t string, z string) (time.Duration, error) {
 	}
 	// calculate the duration
 	d := endTime.Sub(now)
-	return d, nil
+	// format the title
+	layout := "304pm"
+	if min == 0 {
+		// further truncate
+		layout = "3pm"
+	}
+	formatted := endTime.Format(layout)
+	// truncate period
+	formatted = formatted[:len(formatted)-1]
+	title := fmt.Sprintf("%v Timer", formatted)
+	return d, title, nil
 }
 
 func parseArgs(t string, z string) (time.Duration, string) {
@@ -140,9 +150,8 @@ func parseArgs(t string, z string) (time.Duration, string) {
 			return d, title
 		}
 		// parse as time
-		d, err = parseTime(t, z)
+		d, title, err := parseTime(t, z)
 		if err == nil {
-			title := fmt.Sprintf("%v Timer", t)
 			return d, title
 		}
 		// if not time, parse as minute
@@ -151,7 +160,7 @@ func parseArgs(t string, z string) (time.Duration, string) {
 			break
 		}
 		d = time.Duration(minutes) * time.Minute
-		title := fmt.Sprintf("%vm Timer", t)
+		title = fmt.Sprintf("%vm Timer", t)
 		return d, title
 	}
 	fmt.Printf(
