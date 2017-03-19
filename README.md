@@ -81,7 +81,7 @@ If you want a timer for *3:00 pm*, you could simply enter
 ttimer -t 3p
 ```
 
-All end time timers are set to time to align to zero seconds on the minute so they will change over to new minutes with the system clock.
+All end time timers are set to align to zero seconds on the minute so they will change over to new minutes with the system clock.
 
 ## Parsing Rules
 
