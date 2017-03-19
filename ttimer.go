@@ -187,7 +187,7 @@ func (t *Timer) start(d time.Duration) {
 }
 
 func (t *Timer) update() {
-	t.status = "[finished]"
+	t.status = "Finished"
 	now := time.Now()
 	if !now.After(t.end) {
 		exactLeft := t.end.Sub(now)
