@@ -92,7 +92,7 @@ All end time timers are set to align to zero seconds on the minute so they will 
 
 ## Exiting
 
-To exit the timer at any time, simply enter `q`.
+To exit the timer at any time, simply press `q`.
 
 ## Timezone Setting
 
