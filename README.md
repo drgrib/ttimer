@@ -75,7 +75,7 @@ Resulting in something like
 12h22m25s
 ```
 
-If you want a timer for 3:00 pm, you could simply enter
+If you want a timer for *3:00 pm*, you could simply enter
 
 ```
 ttimer -t 3p
