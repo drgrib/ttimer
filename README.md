@@ -47,7 +47,7 @@ ttimer -t 30s
 
 ## End Time Timing
 
-Let's say you need to leave for the bus by **8:12 am**, which is coming up in the next hour. You could simply enter
+Let's say you need to leave for the bus by *8:12 am*, which is coming up in the next hour. You could simply enter
 
 ```
 ttimer -t 812
@@ -60,7 +60,7 @@ and `ttimer` will automatically infer the next occurence of `8:12`, which is `am
 23m29s
 ```
 
-If you want to force it to set a timer for **8:12 pm**, you could use
+If you want to force it to set a timer for *8:12 *pm**, you could use
 
 ```
 ttimer -t 812p
