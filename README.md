@@ -26,7 +26,7 @@ and you will start a timer count down like so
 
 ## Timezone Setting
 
-The default timezone for time-based timers is `America/Los_Angeles`. It can be changed using the `-z` option
+The default timezone for end times is `America/Los_Angeles`. It can be changed using the `-z` option
 
 ```
 ttimer -t 9a -z UTC
