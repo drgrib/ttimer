@@ -20,8 +20,8 @@ and you will start a timer count down like so
 ## Parsing Rules
 
 * All integers less than `100` will be interpretted as minutes
-* Any strings fitting a call to [`time.ParseDuration`](https://golang.org/pkg/time/#ParseDuration) will be interpretted as that duration
-* Any strings ending in `a`, `p`, `am`, or `pm` will be interpretted as times
+* Any strings fitting a call to [`time.ParseDuration`](https://golang.org/pkg/time/#ParseDuration) will be interpretted as that duration. E.g. `1m30s` or `2h`.
+* Any strings ending in `a`, `p`, `am`, or `pm` will be interpretted as times. E.g. `1p` or `930a`.
 * Any integers greater than `100` will be interpretted as times. E.g. `242` will be interpretted as the next occurence of `2:42` and set to `am` or `pm`, whichever is soonest.
 
 ## Timezone Setting
