@@ -1,4 +1,4 @@
-# `ttimer` - Terminal Timer
+# ttimer - Terminal Timer
 
 `ttimer` is a simple timer that counts down time left in a terminal window. If run on Mac, Windows, or desktop Linux, it will send silent system notifications at 90% and 100% completion.
 
