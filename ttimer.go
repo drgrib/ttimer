@@ -6,28 +6,14 @@ import (
 	"fmt"
 	"github.com/0xAX/notificator"
 	ui "github.com/gizak/termui"
+	"github.com/mitchellh/go-homedir"
+	"io/ioutil"
 	"math"
+	"os"
 	"regexp"
 	"strconv"
 	"time"
 )
-
-//////////////////////////////////////////////
-/// flags
-//////////////////////////////////////////////
-
-var args struct {
-	t string
-	z string
-}
-
-func init() {
-	flag.StringVar(
-		&args.t, "t", "1", "time string")
-	flag.StringVar(
-		&args.z, "z", "America/Los_Angeles", "timezone")
-	flag.Parse()
-}
 
 //////////////////////////////////////////////
 /// util
@@ -36,6 +22,62 @@ func init() {
 func mustBeNil(err error) {
 	if err != nil {
 		panic(err)
+	}
+}
+
+//////////////////////////////////////////////
+/// config
+//////////////////////////////////////////////
+
+var args struct {
+	t string
+	z string
+}
+
+var tildaConfig string = "~/.ttimer/conf"
+
+func saveConfigZone(timezone string) {
+	fullConfig, err := homedir.Expand(tildaConfig)
+	mustBeNil(err)
+	err = ioutil.WriteFile(
+		fullConfig, []byte(timezone), 0644)
+	mustBeNil(err)
+}
+
+func initConfig(fullConfig string) {
+	fullPath, err := homedir.Expand("~/.ttimer/")
+	mustBeNil(err)
+	err = os.MkdirAll(fullPath, 0777)
+	mustBeNil(err)
+	saveConfigZone("")
+}
+
+func loadConfigZone() string {
+	fullConfig, err := homedir.Expand(tildaConfig)
+	mustBeNil(err)
+	b, err := ioutil.ReadFile(fullConfig)
+	if err != nil {
+		initConfig(fullConfig)
+	}
+	s := string(b)
+	return s
+}
+
+func init() {
+	flag.StringVar(
+		&args.t, "t", "1", "time string")
+	// load configZone
+	configZone := loadConfigZone()
+	if configZone == "" {
+		configZone = "America/Los_Angeles"
+	}
+	// get user arg, using config if none
+	flag.StringVar(
+		&args.z, "z", configZone, "timezone")
+	flag.Parse()
+	// save configZone
+	if args.z != configZone {
+		saveConfigZone(args.z)
 	}
 }
 
