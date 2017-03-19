@@ -12,7 +12,7 @@ To install to your system you can use
 go get github.com/drgrib/ttimer
 ```
 
-To make it accessible on the commandline as `ttimer`, assuming you've added `$GOPATH/bin` to your `$PATH`, you can use
+To make it accessible on the command line as `ttimer`, assuming you've added `$GOPATH/bin` to your `$PATH`, you can use
 
 ```
 cd $GOPATH/src/github.com/drgrib/ttimer
