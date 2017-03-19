@@ -60,7 +60,7 @@ and `ttimer` will automatically infer the next occurence of `8:12`, which is `am
 23m29s
 ```
 
-If you want to force it to set a timer for *8:12 *pm**, you could use
+If you want to force it to set a timer for *8:12 __pm__*, you could use
 
 ```
 ttimer -t 812p
