@@ -68,20 +68,29 @@ var args struct {
 }
 
 func init() {
-	flag.StringVar(
-		&args.t, "t", "1", "time string")
 	// load configZone
 	configZone := loadConfigZone()
 	if configZone == "" {
 		configZone = "America/Los_Angeles"
 	}
-	// get user arg, using configZone if none
 	flag.StringVar(
-		&args.z, "z", configZone, "timezone")
+		&args.z, "z", "", "timezone")
 	flag.Parse()
-	// save configZone
-	if args.z != configZone {
+	// handle timezone set
+	zoneSet := (args.z != "")
+	if zoneSet {
 		saveConfigZone(args.z)
+		fmt.Printf("Timezone set to %#v\n", args.z)
+		os.Exit(0)
+	} else {
+		args.z = configZone
+		argList := flag.Args()
+		timeSet := (len(argList) > 0)
+		if timeSet {
+			args.t = argList[0]
+		} else {
+			args.t = "1m"
+		}
 	}
 }
 
