@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"github.com/0xAX/notificator"
@@ -104,26 +103,23 @@ func parseClock(clock string) (int, int, error) {
 		hourStr := clock[:len(clock)-2]
 		hour, err := strconv.Atoi(hourStr)
 		if err != nil {
-			return 0, 0, errors.New(
-				fmt.Sprintf(
-					"Couldn't parse hourStr %#v", hourStr))
+			return 0, 0, fmt.Errorf(
+				"Couldn't parse hourStr %#v", hourStr)
 		}
 		// min
 		minStr := clock[len(clock)-2:]
 		min, err := strconv.Atoi(minStr)
 		if err != nil {
-			return 0, 0, errors.New(
-				fmt.Sprintf(
-					"Couldn't parse minStr %#v", minStr))
+			return 0, 0, fmt.Errorf(
+				"Couldn't parse minStr %#v", minStr)
 
 		}
 		return hour, min, nil
 	}
 	hour, err := strconv.Atoi(clock)
 	if err != nil {
-		return 0, 0, errors.New(
-			fmt.Sprintf(
-				"Couldn't parse as hour %#v", clock))
+		return 0, 0, fmt.Errorf(
+			"Couldn't parse as hour %#v", clock)
 	}
 	return hour, 0, nil
 }
@@ -144,8 +140,7 @@ func parseTime(t string, z string) (time.Duration, string, error) {
 	period := m[2]
 	// handle minute case
 	if period == "" && len(clock) <= 2 {
-		return zero, "", errors.New(
-			fmt.Sprintf("No period, assuming minutes, not Time: %#v", clock))
+		return zero, "", fmt.Errorf("No period, assuming minutes, not Time: %#v", clock)
 	}
 	// handle clock
 	hour, min, err := parseClock(clock)
