@@ -2,7 +2,7 @@
 
 `ttimer` is a simple timer that counts down time left in a terminal window. If run on Mac, Windows, or desktop Linux, it will send silent system notifications at 90% and 100% completion.
 
-<img src="./example.gif" alt="demo" width="560px">
+<img src="./example.gif" alt="demo" width="400px">
 
 ## Installing
 
@@ -25,7 +25,7 @@ go install
 Lets say you want a timer for 3 minutes. Simply enter
 
 ```
-ttimer -t 3
+ttimer 3
 ```
 
 and you will start a timer count down like so
@@ -38,13 +38,13 @@ and you will start a timer count down like so
 Or if you want a very specific duration, you can specify it using
 
 ```
-ttimer -t 3h2m5s
+ttimer 3h2m5s
 ```
 
 Or if you want a very short time
 
 ```
-ttimer -t 30s
+ttimer 30s
 ```
 
 ## End Time Timing
@@ -52,7 +52,7 @@ ttimer -t 30s
 Let's say you need to leave for the bus by *8:12 am*, which is coming up in the next hour. You could simply enter
 
 ```
-ttimer -t 812
+ttimer 812
 ```
 
 and `ttimer` will automatically infer the next occurence of `8:12`, which is `am`
@@ -65,7 +65,7 @@ and `ttimer` will automatically infer the next occurence of `8:12`, which is `am
 If you want to force it to set a timer for *8:12 __pm__*, you could use
 
 ```
-ttimer -t 812p
+ttimer 812p
 ```
 
 Resulting in something like
@@ -78,7 +78,7 @@ Resulting in something like
 If you want a timer for *3:00 pm*, you could simply enter
 
 ```
-ttimer -t 3p
+ttimer 3p
 ```
 
 All end time timers are set to align to zero seconds on the minute so they will change over to new minutes with the system clock.
@@ -99,7 +99,13 @@ To exit the timer at any time, simply press `q`.
 The default timezone for end times is `America/Los_Angeles`. This can be changed using the `-z` option
 
 ```
-ttimer -t 9a -z UTC
+ttimer -z UTC
+```
+
+which will return
+
+```
+Timezone set to "UTC"
 ```
 
 Once set, `ttimer` will save the last `-z` option and use it as the default timezone in subsequent runs.
