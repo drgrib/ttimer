@@ -85,7 +85,7 @@ All end time timers are set to align to zero seconds on the minute so they will 
 
 ## Parsing Rules
 
-* Integers less than `100` will be interpretted as minutes
+* Integers less than `100` will be interpretted as minutes.
 * Strings fitting a call to [`time.ParseDuration`](https://golang.org/pkg/time/#ParseDuration) will be interpretted as that duration. E.g. `1m30s` or `2h`.
 * Strings ending in `a`, `p`, `am`, or `pm` will be interpretted as times. E.g. `1p` or `930a`.
 * Integers greater than or equal to `100` will be interpretted as times. E.g. `242` will be interpretted as the next occurence of `2:42` and set to `am` or `pm`, whichever is soonest.
