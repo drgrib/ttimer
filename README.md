@@ -6,9 +6,11 @@
 
 ## Installing
 
-### Homebrew
+### macOS
 
-
+```
+brew install ttimer
+```
 
 ### Go Package
 
