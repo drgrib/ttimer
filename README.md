@@ -12,7 +12,7 @@
 brew install drgrib/tap/ttimer
 ```
 
-### Go Package
+### go get
 
 ```
 go get github.com/drgrib/ttimer
