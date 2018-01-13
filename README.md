@@ -6,7 +6,11 @@
 
 ## Installing
 
-To install to your system you can use 
+### Homebrew
+
+
+
+### Contributor / Manual
 
 ```
 go get github.com/drgrib/ttimer
