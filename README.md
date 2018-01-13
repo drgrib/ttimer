@@ -10,7 +10,7 @@
 
 
 
-### Contributor / Manual
+### Go Package
 
 ```
 go get github.com/drgrib/ttimer
