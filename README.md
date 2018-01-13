@@ -93,21 +93,3 @@ All end time timers are set to align to zero seconds on the minute so they will 
 ## Exiting
 
 To exit the timer at any time, simply press `q`.
-
-## Timezone Setting
-
-The default timezone for end times is `America/Los_Angeles`. This can be changed using the `-z` option
-
-```
-ttimer -z UTC
-```
-
-which will return
-
-```
-Timezone set to "UTC"
-```
-
-Once set, `ttimer` will save the last `-z` option and use it as the default timezone in subsequent runs.
-
-For reference, the list of official `tz` database timezones can be found [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List).
