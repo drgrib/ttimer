@@ -1,5 +1,12 @@
 brew:
+  homepage: https://github.com/drgrib/ttimer
+  builds:
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
   github:
     owner: drgrib
     name: homebrew-tap
-  folder: Formula
