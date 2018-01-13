@@ -9,7 +9,7 @@
 ### macOS
 
 ```
-brew install ttimer
+brew install drgrib/tap/ttimer
 ```
 
 ### Go Package
