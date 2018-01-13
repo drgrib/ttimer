@@ -63,33 +63,16 @@ func loadConfigZone() string {
 
 var args struct {
 	t string
-	z string
 }
 
 func init() {
-	// load configZone
-	configZone := loadConfigZone()
-	if configZone == "" {
-		configZone = "America/Los_Angeles"
-	}
-	flag.StringVar(
-		&args.z, "z", "", "timezone")
 	flag.Parse()
-	// handle timezone set
-	zoneSet := (args.z != "")
-	if zoneSet {
-		saveConfigZone(args.z)
-		fmt.Printf("Timezone set to %#v\n", args.z)
-		os.Exit(0)
+	argList := flag.Args()
+	timeSet := (len(argList) > 0)
+	if timeSet {
+		args.t = argList[0]
 	} else {
-		args.z = configZone
-		argList := flag.Args()
-		timeSet := (len(argList) > 0)
-		if timeSet {
-			args.t = argList[0]
-		} else {
-			args.t = "1m"
-		}
+		args.t = "1m"
 	}
 }
 
@@ -124,14 +107,10 @@ func parseClock(clock string) (int, int, error) {
 	return hour, 0, nil
 }
 
-func parseTime(t string, z string) (time.Duration, string, error) {
+func parseTime(t string) (time.Duration, string, error) {
 	// parameterized location due to not all platforms supporting local detection
-	loc, err := time.LoadLocation(z)
 	zero := time.Duration(0)
-	if err != nil {
-		return zero, "", err
-	}
-	now := time.Now().In(loc)
+	now := time.Now()
 	// track period
 	pattern := `(\d+)(a|p)?`
 	r := regexp.MustCompile(pattern)
@@ -151,8 +130,7 @@ func parseTime(t string, z string) (time.Duration, string, error) {
 	endTime := time.Date(
 		now.Year(), now.Month(), now.Day(),
 		hour, min,
-		0, 0,
-		loc)
+		0, 0, now.Location())
 	// increment by 12 hours until after now
 	for endTime.Before(now) {
 		endTime = endTime.Add(12 * time.Hour)
@@ -179,7 +157,7 @@ func parseTime(t string, z string) (time.Duration, string, error) {
 	return d, title, nil
 }
 
-func parseArgs(t string, z string) (time.Duration, string) {
+func parseArgs(t string) (time.Duration, string) {
 	switch {
 	case len(t) == 1:
 		// simple minute timer
@@ -198,7 +176,7 @@ func parseArgs(t string, z string) (time.Duration, string) {
 			return d, title
 		}
 		// parse as time
-		d, title, err := parseTime(t, z)
+		d, title, err := parseTime(t)
 		if err == nil {
 			return d, title
 		}
@@ -330,7 +308,7 @@ func (t *Timer) countDown() {
 
 func main() {
 	// parse
-	d, title := parseArgs(args.t, args.z)
+	d, title := parseArgs(args.t)
 
 	// start timer
 	timer := Timer{title: title}
