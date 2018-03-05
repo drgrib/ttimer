@@ -5,10 +5,7 @@ import (
 	"fmt"
 	"github.com/0xAX/notificator"
 	ui "github.com/gizak/termui"
-	"github.com/mitchellh/go-homedir"
-	"io/ioutil"
 	"math"
-	"os"
 	"regexp"
 	"strconv"
 	"time"
@@ -22,39 +19,6 @@ func mustBeNil(err error) {
 	if err != nil {
 		panic(err)
 	}
-}
-
-//////////////////////////////////////////////
-/// config
-//////////////////////////////////////////////
-
-var tildaConfig string = "~/.ttimer/conf"
-
-func saveConfigZone(timezone string) {
-	fullConfig, err := homedir.Expand(tildaConfig)
-	mustBeNil(err)
-	err = ioutil.WriteFile(
-		fullConfig, []byte(timezone), 0644)
-	mustBeNil(err)
-}
-
-func initConfig(fullConfig string) {
-	fullPath, err := homedir.Expand("~/.ttimer/")
-	mustBeNil(err)
-	err = os.MkdirAll(fullPath, 0777)
-	mustBeNil(err)
-	saveConfigZone("")
-}
-
-func loadConfigZone() string {
-	fullConfig, err := homedir.Expand(tildaConfig)
-	mustBeNil(err)
-	b, err := ioutil.ReadFile(fullConfig)
-	if err != nil {
-		initConfig(fullConfig)
-	}
-	s := string(b)
-	return s
 }
 
 //////////////////////////////////////////////
