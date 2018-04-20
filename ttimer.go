@@ -3,23 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/0xAX/notificator"
-	ui "github.com/gizak/termui"
-	"math"
 	"regexp"
 	"strconv"
 	"time"
+
+	"github.com/drgrib/ttimer/agent"
 )
-
-//////////////////////////////////////////////
-/// util
-//////////////////////////////////////////////
-
-func mustBeNil(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
 
 //////////////////////////////////////////////
 /// flags
@@ -162,111 +151,6 @@ func parseArgs(t string) (time.Duration, string) {
 }
 
 //////////////////////////////////////////////
-/// Timer
-//////////////////////////////////////////////
-
-type Timer struct {
-	title    string
-	duration time.Duration
-	end      time.Time
-	left     time.Duration
-	status   string
-}
-
-func (t *Timer) start(d time.Duration) {
-	t.duration = d
-	t.end = time.Now().Add(t.duration)
-}
-
-func (t *Timer) update() {
-	t.status = "Finished"
-	now := time.Now()
-	if !now.After(t.end) {
-		exactLeft := t.end.Sub(now)
-		floorSeconds := math.Floor(exactLeft.Seconds())
-		t.left = time.Duration(floorSeconds) * time.Second
-		t.status = fmt.Sprintf("%v", t.left)
-	}
-}
-
-func (t *Timer) countDown() {
-	// init and close
-	err := ui.Init()
-	mustBeNil(err)
-	defer ui.Close()
-
-	// init notificator
-	notify := notificator.New(notificator.Options{
-		AppName: t.title,
-	})
-
-	// set and execute pre-notify
-	seconds := t.duration.Seconds()
-	if seconds > 10 {
-		go func() {
-			almostSec := math.Floor(seconds * .9)
-			almostDur := time.Duration(almostSec) * time.Second
-			<-time.After(almostDur)
-			message := fmt.Sprintf("%v left", t.left)
-			notify.Push(
-				"", message, "", notificator.UR_CRITICAL)
-		}()
-	}
-	// set and execute notify
-	go func() {
-		<-time.After(t.duration)
-		notify.Push(
-			"", "Finished", "", notificator.UR_CRITICAL)
-	}()
-
-	// init cell
-	cell := ui.NewPar("")
-	cell.TextFgColor = ui.ColorDefault
-	cell.Border = false
-	cell.X = 2
-	cell.Y = 1
-	cell.Width = ui.TermWidth()
-	cell.Height = ui.TermHeight()
-
-	// draw
-	banner := fmt.Sprintf("== %s ==", t.title)
-	draw := func(tick int) {
-		t.update()
-		// render
-		cell.Text = fmt.Sprintf("%s\n%v",
-			banner,
-			t.status)
-		ui.Render(cell)
-	}
-
-	// handle update
-	ms := 50
-	timerPath := fmt.Sprintf("/timer/%vms", ms)
-	ui.Merge("timer", ui.NewTimerCh(
-		time.Duration(ms)*time.Millisecond))
-	ui.Handle(timerPath, func(e ui.Event) {
-		tick := e.Data.(ui.EvtTimer)
-		draw(int(tick.Count))
-	})
-
-	// handle resize
-	ui.Handle("/sys/wnd/resize", func(e ui.Event) {
-		cell.Width = ui.TermWidth()
-		cell.Height = ui.TermHeight()
-		ui.Clear()
-		ui.Render(ui.Body)
-	})
-
-	// handle quit
-	ui.Handle("/sys/kbd/q", func(ui.Event) {
-		ui.StopLoop()
-	})
-
-	// start loop
-	ui.Loop()
-}
-
-//////////////////////////////////////////////
 /// main
 //////////////////////////////////////////////
 
@@ -275,9 +159,9 @@ func main() {
 	d, title := parseArgs(args.t)
 
 	// start timer
-	timer := Timer{title: title}
-	timer.start(d)
+	t := agent.Timer{Title: title}
+	t.Start(d)
 
 	// run UI
-	timer.countDown()
+	t.CountDown()
 }
