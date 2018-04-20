@@ -24,6 +24,7 @@ func mustBeNil(err error) {
 
 type Timer struct {
 	Title    string
+	Debug    bool
 	duration time.Duration
 	end      time.Time
 	left     time.Duration
@@ -46,6 +47,10 @@ func (t *Timer) update() {
 		floorSeconds := math.Floor(exactLeft.Seconds())
 		t.left = time.Duration(floorSeconds) * time.Second
 		t.status = Sprintf("%v", t.left)
+		if t.Debug {
+			t.status += "\n"
+			t.status += Sprintf("\nt.end: %v", t.end)
+		}
 	}
 }
 
