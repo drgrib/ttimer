@@ -19,6 +19,24 @@ func mustBeNil(err error) {
 }
 
 //////////////////////////////////////////////
+/// AfterWallClock
+//////////////////////////////////////////////
+
+func AfterWallClock(d time.Duration) <-chan time.Time {
+	c := make(chan time.Time, 1)
+	go func() {
+		end := time.Now().Add(d)
+		// clear monotonic clock
+		end = end.Round(0)
+		for !time.Now().After(end) {
+			time.Sleep(100 * time.Millisecond)
+		}
+		c <- time.Now()
+	}()
+	return c
+}
+
+//////////////////////////////////////////////
 /// Timer
 //////////////////////////////////////////////
 
@@ -42,6 +60,8 @@ func (t *Timer) Start(d time.Duration) {
 func (t *Timer) update() {
 	t.status = "Finished"
 	now := time.Now()
+	// strip monotonic time to account for system changes
+	t.end = t.end.Round(0)
 	if !now.After(t.end) {
 		exactLeft := t.end.Sub(now)
 		floorSeconds := math.Floor(exactLeft.Seconds())
@@ -74,7 +94,7 @@ func (t *Timer) CountDown() {
 		go func() {
 			almostSec := math.Floor(seconds * .9)
 			almostDur := time.Duration(almostSec) * time.Second
-			<-time.After(almostDur)
+			<-AfterWallClock(almostDur)
 			message := Sprintf("%v left", t.left)
 			notify.Push(
 				"", message, "", notificator.UR_CRITICAL)
@@ -82,7 +102,7 @@ func (t *Timer) CountDown() {
 	}
 	// set and execute notify
 	go func() {
-		<-time.After(t.duration)
+		<-AfterWallClock(t.duration)
 		notify.Push(
 			"", "Finished", "", notificator.UR_CRITICAL)
 	}()
