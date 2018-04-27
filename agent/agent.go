@@ -52,6 +52,7 @@ func (t *Timer) update() {
 			t.status += Sprintf("\nnow: %v", now)
 			t.status += Sprintf("\nexactLeft: %v", exactLeft)
 			t.status += Sprintf("\nt.end: %v", t.end)
+			t.status += Sprintf("\nt.end.Sub(now): %v", t.end.Sub(now))
 		}
 	}
 }
