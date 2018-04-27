@@ -54,14 +54,13 @@ func (t *Timer) Start(d time.Duration) {
 	if t.Title == "" {
 		t.Title = Sprintf("%v Timer", d)
 	}
-	t.end = time.Now().Add(t.duration)
+	// strip monotonic time to account for system changes
+	t.end = time.Now().Add(t.duration).Round(0)
 }
 
 func (t *Timer) update() {
 	t.status = "Finished"
 	now := time.Now()
-	// strip monotonic time to account for system changes
-	t.end = t.end.Round(0)
 	if !now.After(t.end) {
 		exactLeft := t.end.Sub(now)
 		floorSeconds := math.Floor(exactLeft.Seconds())
