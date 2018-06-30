@@ -148,6 +148,9 @@ func (t *Timer) CountDown() {
 	ui.Handle("/sys/kbd/q", func(ui.Event) {
 		ui.StopLoop()
 	})
+	ui.Handle("/sys/kbd/C-c", func(ui.Event) {
+		ui.StopLoop()
+	})
 
 	// start loop
 	ui.Loop()
