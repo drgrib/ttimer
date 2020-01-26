@@ -33,6 +33,7 @@ func main() {
 	d, title, err := parse.Args(args.t)
 	if err != nil {
 		fmt.Println(err.Error())
+		fmt.Println("\nPlease refer to https://github.com/drgrib/ttimer for usage instructions.")
 		return
 	}
 
