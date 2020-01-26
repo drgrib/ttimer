@@ -1,5 +1,7 @@
-brew:
-  homepage: https://github.com/drgrib/ttimer
-  github:
-    owner: drgrib
-    name: homebrew-tap
+brews:
+  -
+    # ttimer
+    homepage: https://github.com/drgrib/ttimer
+    github:
+      owner: drgrib
+      name: homebrew-tap
