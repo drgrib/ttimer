@@ -46,6 +46,9 @@ func parseTime(t string) (time.Duration, string, error) {
 	pattern := `(\d+)(a|p)?`
 	r := regexp.MustCompile(pattern)
 	m := r.FindStringSubmatch(t)
+	if len(m) < 3 {
+		return zero, "", Errorf("Could not parse as Time: %#v", t)
+	}
 	clock := m[1]
 	period := m[2]
 	// handle minute case
@@ -88,42 +91,36 @@ func parseTime(t string) (time.Duration, string, error) {
 	return d, title, nil
 }
 
-func Args(t string) (time.Duration, string) {
+func Args(t string) (time.Duration, string, error) {
 	switch {
 	case len(t) == 1:
 		// simple minute timer
 		minutes, err := strconv.Atoi(t)
 		if err != nil {
-			break
+			return 0, "", err
 		}
 		d := time.Duration(minutes) * time.Minute
 		title := Sprintf("%vm Timer", t)
-		return d, title
+		return d, title, nil
 	default:
 		// parse as duration
 		d, err := time.ParseDuration(t)
 		if err == nil {
 			title := Sprintf("%v Timer", t)
-			return d, title
+			return d, title, nil
 		}
 		// parse as time
 		d, title, err := parseTime(t)
 		if err == nil {
-			return d, title
+			return d, title, nil
 		}
 		// if not time, parse as minute
 		minutes, err := strconv.Atoi(t)
 		if err != nil {
-			break
+			return 0, "", err
 		}
 		d = time.Duration(minutes) * time.Minute
 		title = Sprintf("%vm Timer", t)
-		return d, title
+		return d, title, nil
 	}
-	Printf(
-		"%#v couldn't be parsed, starting 1m timer\n", t)
-	d := time.Duration(1 * time.Minute)
-	title := "1m Timer"
-	return d, title
-
 }
