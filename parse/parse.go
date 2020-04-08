@@ -2,6 +2,7 @@ package parse
 
 import (
 	. "fmt"
+	"math"
 	"regexp"
 	"strconv"
 	"time"
@@ -92,13 +93,23 @@ func parseTime(t string) (time.Duration, string, error) {
 }
 
 func Args(t string) (time.Duration, string, error) {
+	f, err := strconv.ParseFloat(t, 64)
 	switch {
+	case err == nil:
+		floatMinutes := math.Floor(f)
+		seconds := int64(math.Floor((f - floatMinutes) * 60))
+		minutes := int64(floatMinutes)
+
+		d := time.Duration(minutes)*time.Minute + time.Duration(seconds)*time.Second
+		title := Sprintf("%vm Timer", f)
+		return d, title, nil
 	case len(t) == 1:
 		// simple minute timer
 		minutes, err := strconv.Atoi(t)
 		if err != nil {
 			return 0, "", err
 		}
+
 		d := time.Duration(minutes) * time.Minute
 		title := Sprintf("%vm Timer", t)
 		return d, title, nil
