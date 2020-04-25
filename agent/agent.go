@@ -2,10 +2,11 @@ package agent
 
 import (
 	. "fmt"
-	"github.com/0xAX/notificator"
-	ui "github.com/gizak/termui"
 	"math"
 	"time"
+
+	"github.com/0xAX/notificator"
+	ui "github.com/gizak/termui"
 )
 
 //////////////////////////////////////////////
@@ -56,31 +57,6 @@ func (t *Timer) Start(d time.Duration) {
 	}
 	// strip monotonic time to account for system changes
 	t.end = time.Now().Add(t.duration).Round(0)
-}
-
-func (t *Timer) update() {
-	t.status = "Finished"
-	now := time.Now()
-	if !now.After(t.end) {
-		exactLeft := t.end.Sub(now)
-		floorSeconds := math.Floor(exactLeft.Seconds())
-		t.left = time.Duration(floorSeconds) * time.Second
-		t.status = Sprintf("%v", t.left)
-		if t.Debug {
-			t.status += "\n"
-			t.status += Sprintf("\nnow: %v", now)
-			t.status += Sprintf("\nexactLeft: %v", exactLeft)
-			t.status += Sprintf("\nt.end: %v", t.end)
-			t.status += Sprintf("\nt.end.Sub(now): %v", t.end.Sub(now))
-		}
-	}
-}
-
-func (t *Timer) CountDown() {
-	// init and close
-	err := ui.Init()
-	mustBeNil(err)
-	defer ui.Close()
 
 	// init notificator
 	notify := notificator.New(notificator.Options{
@@ -105,6 +81,31 @@ func (t *Timer) CountDown() {
 		notify.Push(
 			"", "Finished", "", notificator.UR_CRITICAL)
 	}()
+}
+
+func (t *Timer) update() {
+	t.status = "Finished\n\n[r]estart\n[q]uit"
+	now := time.Now()
+	if !now.After(t.end) {
+		exactLeft := t.end.Sub(now)
+		floorSeconds := math.Floor(exactLeft.Seconds())
+		t.left = time.Duration(floorSeconds) * time.Second
+		t.status = Sprintf("%v", t.left)
+		if t.Debug {
+			t.status += "\n"
+			t.status += Sprintf("\nnow: %v", now)
+			t.status += Sprintf("\nexactLeft: %v", exactLeft)
+			t.status += Sprintf("\nt.end: %v", t.end)
+			t.status += Sprintf("\nt.end.Sub(now): %v", t.end.Sub(now))
+		}
+	}
+}
+
+func (t *Timer) CountDown() {
+	// init and close
+	err := ui.Init()
+	mustBeNil(err)
+	defer ui.Close()
 
 	// init cell
 	cell := ui.NewPar("")
@@ -150,6 +151,13 @@ func (t *Timer) CountDown() {
 	})
 	ui.Handle("/sys/kbd/C-c", func(ui.Event) {
 		ui.StopLoop()
+	})
+
+	// handle restart
+	ui.Handle("/sys/kbd/r", func(ui.Event) {
+		if time.Now().After(t.end) {
+			t.Start(t.duration)
+		}
 	})
 
 	// start loop
