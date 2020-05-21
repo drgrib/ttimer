@@ -6,7 +6,13 @@ import (
 	"time"
 
 	"github.com/0xAX/notificator"
-	ui "github.com/gizak/termui"
+	ui "github.com/gizak/termui/v3"
+	"github.com/gizak/termui/v3/widgets"
+)
+
+const (
+	termX = 1
+	termY = 0
 )
 
 //////////////////////////////////////////////
@@ -107,59 +113,46 @@ func (t *Timer) CountDown() {
 	mustBeNil(err)
 	defer ui.Close()
 
-	// init cell
-	cell := ui.NewPar("")
-	cell.TextFgColor = ui.ColorDefault
-	cell.Border = false
-	cell.X = 2
-	cell.Y = 1
-	cell.Width = ui.TermWidth()
-	cell.Height = ui.TermHeight()
+	p := widgets.NewParagraph()
+	termWidth, termHeight := ui.TerminalDimensions()
+	p.SetRect(termX, termY, termWidth, termHeight)
+	p.TextStyle.Fg = ui.ColorClear
+	p.Border = false
 
 	// draw
 	banner := Sprintf("== %s ==", t.Title)
 	draw := func(tick int) {
 		t.update()
 		// render
-		cell.Text = Sprintf("%s\n%v",
+		p.Text = Sprintf("%s\n%v",
 			banner,
 			t.status)
-		ui.Render(cell)
+		ui.Render(p)
 	}
 
-	// handle update
-	ms := 50
-	timerPath := Sprintf("/timer/%vms", ms)
-	ui.Merge("timer", ui.NewTimerCh(
-		time.Duration(ms)*time.Millisecond))
-	ui.Handle(timerPath, func(e ui.Event) {
-		tick := e.Data.(ui.EvtTimer)
-		draw(int(tick.Count))
-	})
+	tickerCount := 1
+	draw(tickerCount)
+	tickerCount++
+	ticker := time.NewTicker(100 * time.Millisecond).C
 
-	// handle resize
-	ui.Handle("/sys/wnd/resize", func(e ui.Event) {
-		cell.Width = ui.TermWidth()
-		cell.Height = ui.TermHeight()
-		ui.Clear()
-		ui.Render(ui.Body)
-	})
-
-	// handle quit
-	ui.Handle("/sys/kbd/q", func(ui.Event) {
-		ui.StopLoop()
-	})
-	ui.Handle("/sys/kbd/C-c", func(ui.Event) {
-		ui.StopLoop()
-	})
-
-	// handle restart
-	ui.Handle("/sys/kbd/r", func(ui.Event) {
-		if time.Now().After(t.end) {
-			t.Start(t.duration)
+	uiEvents := ui.PollEvents()
+	for {
+		select {
+		case e := <-uiEvents:
+			switch e.ID {
+			case "q", "<C-c>", "<Escape>":
+				return
+			case "r":
+				if time.Now().After(t.end) {
+					t.Start(t.duration)
+				}
+			case "<Resize>":
+				resize := e.Payload.(ui.Resize)
+				p.SetRect(termX, termY, resize.Width, resize.Height)
+			}
+		case <-ticker:
+			draw(tickerCount)
+			tickerCount++
 		}
-	})
-
-	// start loop
-	ui.Loop()
+	}
 }
