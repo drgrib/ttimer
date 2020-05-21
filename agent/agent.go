@@ -77,14 +77,14 @@ func (t *Timer) Start(d time.Duration) {
 			almostDur := time.Duration(almostSec) * time.Second
 			<-AfterWallClock(almostDur)
 			message := Sprintf("%v left", t.left)
-			notify.Push(
+			_ = notify.Push(
 				"", message, "", notificator.UR_CRITICAL)
 		}()
 	}
 	// set and execute notify
 	go func() {
 		<-AfterWallClock(t.duration)
-		notify.Push(
+		_ = notify.Push(
 			"", "Finished", "", notificator.UR_CRITICAL)
 	}()
 }
