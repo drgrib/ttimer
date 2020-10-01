@@ -107,7 +107,24 @@ func (t *Timer) update() {
 	}
 }
 
-func (t *Timer) CountDown() {
+type countdownParams struct {
+	eventHandler func(string)
+}
+
+type countdownOption func(opts *countdownParams)
+
+func WithEventHandler(eventHandler func(string)) countdownOption {
+	return func(opts *countdownParams) {
+		opts.eventHandler = eventHandler
+	}
+}
+
+func (t *Timer) CountDown(opts ...countdownOption) {
+	var params countdownParams
+	for _, o := range opts {
+		o(&params)
+	}
+
 	// init and close
 	err := ui.Init()
 	mustBeNil(err)
@@ -149,6 +166,9 @@ func (t *Timer) CountDown() {
 			case "<Resize>":
 				resize := e.Payload.(ui.Resize)
 				p.SetRect(termX, termY, resize.Width, resize.Height)
+			}
+			if params.eventHandler != nil {
+				params.eventHandler(e.ID)
 			}
 		case <-ticker:
 			draw(tickerCount)
