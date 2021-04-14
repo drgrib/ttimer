@@ -99,3 +99,12 @@ All end time timers are set to align to zero seconds on the minute so they will 
 ## Exiting
 
 To exit the timer at any time, simply press `q`.
+
+## Auto Exit
+
+To make the timer automatically exit after finishing pass the `-q` argument. Like these examples
+
+```
+ttimer 30s -q
+ttimer -q 30s
+```
