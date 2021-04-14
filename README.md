@@ -102,7 +102,7 @@ To exit the timer at any time, simply press `q`.
 
 ## Auto Exit
 
-To make the timer automatically exit after finishing pass the `-q` argument like this
+To make the timer automatically exit after finishing, pass the `-q` argument like this
 
 ```
 ttimer -q 30s
