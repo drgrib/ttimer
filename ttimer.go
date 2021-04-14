@@ -14,12 +14,23 @@ import (
 
 var args struct {
 	t string
+	q bool
 }
 
 func init() {
-	if len(os.Args) > 1 {
+	switch len(os.Args) {
+	case 3:
+		if os.Args[1] == "-q" {
+			args.q = true
+			args.t = os.Args[2]
+		}
+		if os.Args[2] == "-q" {
+			args.q = true
+			args.t = os.Args[1]
+		}
+	case 2:
 		args.t = os.Args[1]
-	} else {
+	default:
 		args.t = "1m"
 	}
 }
@@ -39,6 +50,7 @@ func main() {
 
 	// start timer
 	t := agent.Timer{Title: title}
+	t.AutoQuit = args.q
 	t.Start(d)
 
 	// run UI

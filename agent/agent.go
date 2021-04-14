@@ -49,11 +49,13 @@ func AfterWallClock(d time.Duration) <-chan time.Time {
 
 type Timer struct {
 	Title    string
+	AutoQuit bool
 	Debug    bool
 	duration time.Duration
 	end      time.Time
 	left     time.Duration
 	status   string
+	finished bool
 }
 
 func (t *Timer) Start(d time.Duration) {
@@ -104,6 +106,8 @@ func (t *Timer) update() {
 			t.status += Sprintf("\nt.end: %v", t.end)
 			t.status += Sprintf("\nt.end.Sub(now): %v", t.end.Sub(now))
 		}
+	} else {
+		t.finished = true
 	}
 }
 
@@ -173,6 +177,9 @@ func (t *Timer) CountDown(opts ...countdownOption) {
 		case <-ticker:
 			draw(tickerCount)
 			tickerCount++
+			if t.AutoQuit && t.finished {
+				return
+			}
 		}
 	}
 }
