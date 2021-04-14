@@ -12,6 +12,14 @@
 brew install drgrib/tap/ttimer
 ```
 
+#### Upgrading
+
+To get the latest version after installing with `brew`, use
+
+```
+brew upgrade ttimer
+```
+
 ### go get
 
 ```
