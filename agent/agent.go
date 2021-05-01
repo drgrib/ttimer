@@ -88,11 +88,14 @@ func (t *Timer) Start(d time.Duration) {
 		<-AfterWallClock(t.duration)
 		_ = notify.Push(
 			"", "Finished", "", notificator.UR_CRITICAL)
+		t.finished = true
 	}()
 }
 
 func (t *Timer) update() {
-	t.status = "Finished\n\n[r]estart\n[q]uit"
+	if !t.AutoQuit {
+		t.status = "Finished\n\n[r]estart\n[q]uit"
+	}
 	now := time.Now()
 	if !now.After(t.end) {
 		exactLeft := t.end.Sub(now)
@@ -106,8 +109,6 @@ func (t *Timer) update() {
 			t.status += Sprintf("\nt.end: %v", t.end)
 			t.status += Sprintf("\nt.end.Sub(now): %v", t.end.Sub(now))
 		}
-	} else {
-		t.finished = true
 	}
 }
 
