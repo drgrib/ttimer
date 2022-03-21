@@ -100,6 +100,14 @@ func Args(t string) (time.Duration, string, error) {
 		seconds := int64(math.Floor((f - floatMinutes) * 60))
 		minutes := int64(floatMinutes)
 
+		if seconds == 0 && len(t) > 1 {
+			// parse as time
+			d, title, err := parseTime(t)
+			if err == nil {
+				return d, title, nil
+			}
+		}
+
 		d := time.Duration(minutes)*time.Minute + time.Duration(seconds)*time.Second
 		title := Sprintf("%vm Timer", f)
 		return d, title, nil
