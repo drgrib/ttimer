@@ -1,7 +1,0 @@
-brew:
-  -
-    # ttimer
-    homepage: https://github.com/drgrib/ttimer
-    tap:
-      owner: drgrib
-      name: homebrew-tap
