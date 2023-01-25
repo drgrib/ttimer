@@ -1,8 +1,10 @@
 package agent
 
 import (
+	"fmt"
 	. "fmt"
 	"math"
+	"strings"
 	"time"
 
 	"github.com/0xAX/notificator"
@@ -92,6 +94,26 @@ func (t *Timer) Start(d time.Duration) {
 	}()
 }
 
+func shortTimeString(t time.Time) string {
+	hour := t.Hour()
+	min := t.Minute()
+	period := "a"
+	if hour >= 12 {
+		period = "p"
+	}
+	outHour := hour
+	if period == "p" && hour > 12 {
+		outHour -= 12
+	}
+	if outHour == 0 {
+		outHour = 12
+	}
+	if min == 0 {
+		return fmt.Sprintf("%d%s", outHour, period)
+	}
+	return fmt.Sprintf("%d%02d%s", outHour, min, period)
+}
+
 func (t *Timer) update() {
 	if !t.AutoQuit {
 		t.status = "Finished\n\n[r]estart\n[q]uit"
@@ -101,7 +123,12 @@ func (t *Timer) update() {
 		exactLeft := t.end.Sub(now)
 		floorSeconds := math.Floor(exactLeft.Seconds())
 		t.left = time.Duration(floorSeconds) * time.Second
+		endTime := time.Now().Add(t.left)
 		t.status = Sprintf("%v", t.left)
+		// Don't duplicate the title if this is already an end time based timer
+		if !(strings.Contains(t.Title, "a") || strings.Contains(t.Title, "p")) {
+			t.status += " " + shortTimeString(endTime)
+		}
 		if t.Debug {
 			t.status += "\n"
 			t.status += Sprintf("\nnow: %v", now)
