@@ -14,48 +14,42 @@ brew install drgrib/tap/ttimer
 
 #### Upgrading
 
-To get the latest version after installing with `brew`, use
+To get the latest version after installing with `brew`, use:
 
 ```
 brew upgrade ttimer
 ```
 
-### go get
+### go install
 
 ```
-go get github.com/drgrib/ttimer
+go install github.com/drgrib/ttimer@latest
 ```
 
-To make it accessible on the command line as `ttimer`, assuming you've added `$GOPATH/bin` to your `$PATH`, you can use
-
-```
-cd $GOPATH/src/github.com/drgrib/ttimer
-go build
-go install
-```
+To make it accessible on the command line as `ttimer`, ensure you've added `$GOPATH/bin` to your `$PATH`.
 
 ## Duration Timing
 
-Lets say you want a timer for 3 minutes. Simply enter
+Lets say you want a timer for 3 minutes. Simply enter:
 
 ```
 ttimer 3
 ```
 
-and you will start a timer count down like so
+This will start a timer count down like so:
 
 ```
 == 3m Timer ==
 2m55s
 ```
 
-Or if you want a very specific duration, you can specify it using
+Or if you want a very specific duration, you can specify it using:
 
 ```
 ttimer 3h2m5s
 ```
 
-Or if you want a very short time
+Or if you want a very short time:
 
 ```
 ttimer 30s
@@ -63,33 +57,33 @@ ttimer 30s
 
 ## End Time Timing
 
-Let's say you need to leave for the bus by *8:12 am*, which is coming up in the next hour. You could simply enter
+Let's say you need to leave for the bus by *8:12 am*, which is coming up in the next hour. You could simply enter:
 
 ```
 ttimer 812
 ```
 
-and `ttimer` will automatically infer the next occurence of `8:12`, which is `am`
+And `ttimer` will automatically infer the next occurrence of `8:12`, which is `am`:
 
 ```
 == 812a Timer ==
 23m29s
 ```
 
-If you want to force it to set a timer for *8:12 __pm__*, you could use
+If you want to force it to set a timer for *8:12 __pm__*, you could use:
 
 ```
 ttimer 812p
 ```
 
-Resulting in something like
+Resulting in something like:
 
 ```
 == 812p Timer ==
 12h22m25s
 ```
 
-If you want a timer for *3:00 pm*, you could simply enter
+If you want a timer for *3:00 pm*, you could simply enter:
 
 ```
 ttimer 3p
@@ -99,10 +93,10 @@ All end time timers are set to align to zero seconds on the minute so they will 
 
 ## Parsing Rules
 
-* Integers less than `100` and floats will be interpretted as minutes.
-* Strings fitting a call to [`time.ParseDuration`](https://golang.org/pkg/time/#ParseDuration) will be interpretted as that duration. E.g. `1m30s` or `2h`.
-* Strings ending in `a`, `p`, `am`, or `pm` will be interpretted as times. E.g. `1p` or `930a`.
-* Integers greater than or equal to `100` will be interpretted as times. E.g. `242` will be interpretted as the next occurence of `2:42` and set to `am` or `pm`, whichever is soonest.
+* Integers less than `100` and floats will be interpreted as minutes.
+* Strings fitting a call to [`time.ParseDuration`](https://golang.org/pkg/time/#ParseDuration) will be interpreted as that duration. E.g. `1m30s` or `2h`.
+* Strings ending in `a`, `p`, `am`, or `pm` will be interpreted as times. E.g. `1p` or `930a`.
+* Integers greater than or equal to `100` will be interpreted as times. E.g. `242` will be interpreted as the next occurrence of `2:42` and set to `am` or `pm`, whichever is soonest.
 
 ## Exiting
 
